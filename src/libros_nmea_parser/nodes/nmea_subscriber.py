@@ -1,23 +1,28 @@
+#!/usr/bin/env python
+
+import rospy
 import json
-import rclpy
-from rclpy.node import Node
 from std_msgs.msg import String
 
-class NMEASubscriber(Node):
+class NMEASubscriber:
     def __init__(self):
-        super().__init__('nmea_subscriber')
-        self.subscription = self.create_subscription(
-            String,
+        rospy.init_node('nmea_subscriber', anonymous=True)
+        self.subscription = rospy.Subscriber(
             'nmea_data_json',
+            String,
             self.listener_callback,
-            10
+            queue_size=10
         )
-        self.subscription 
-
+        
     def listener_callback(self, msg):
         data_str = msg.data
-        data = json.loads(data_str)  
-        self.process_nmea_data(data)
+        try:
+            data = json.loads(data_str)
+            self.process_nmea_data(data)
+        except json.JSONDecodeError:
+            rospy.logwarn("Received data is not valid JSON: %s", data_str)
+        except Exception as e:
+            rospy.logerr("Error processing received data: %s", e)
 
     def process_nmea_data(self, data):
         if 'RMC' in data:
@@ -26,36 +31,38 @@ class NMEASubscriber(Node):
         elif 'GGA' in data:
             data_type = 'GGA'
             data = data['GGA']
-        fix_type = data.get('fix_type')
-        latitude = data.get('latitude')
-        latitude_direction = data.get('latitude_direction')
-        longitude = data.get('longitude')
-        longitude_direction = data.get('longitude_direction')
-        altitude = data.get('altitude')
-        mean_sea_level = data.get('mean_sea_level')
-        hdop = data.get('hdop')
-        speed = data.get('speed')
-        num_satellites = data.get('num_satellites')
-        utc_time = data.get('utc_time')
-        fix_valid = data.get('fix_valid')
+        else:
+            data_type = 'Unknown'
+            data = {}
 
-        self.get_logger().info(f'Data_Type: {data_type}')
-        self.get_logger().info(f'Fix Type: {fix_type}')
-        self.get_logger().info(f'Latitude: {latitude} {latitude_direction}')
-        self.get_logger().info(f'Longitude: {longitude} {longitude_direction}')
-        self.get_logger().info(f'Altitude: {altitude} meters')
-        self.get_logger().info(f'Mean Sea Level: {mean_sea_level} meters')
-        self.get_logger().info(f'Speed: {speed}')
-        self.get_logger().info(f'HDOP: {hdop}')
-        self.get_logger().info(f'Number of Satellites: {num_satellites}')
-        self.get_logger().info(f'UTC Time: {utc_time}')
+        fix_type = data.get('fix_type', 'N/A')
+        latitude = data.get('latitude', 'N/A')
+        latitude_direction = data.get('latitude_direction', 'N/A')
+        longitude = data.get('longitude', 'N/A')
+        longitude_direction = data.get('longitude_direction', 'N/A')
+        altitude = data.get('altitude', 'N/A')
+        mean_sea_level = data.get('mean_sea_level', 'N/A')
+        hdop = data.get('hdop', 'N/A')
+        speed = data.get('speed', 'N/A')
+        num_satellites = data.get('num_satellites', 'N/A')
+        utc_time = data.get('utc_time', 'N/A')
+        fix_valid = data.get('fix_valid', 'N/A')
 
-def main(args=None):
-    rclpy.init(args=args)
+        rospy.loginfo(f'Data_Type: {data_type}')
+        rospy.loginfo(f'Fix Type: {fix_type}')
+        rospy.loginfo(f'Latitude: {latitude} {latitude_direction}')
+        rospy.loginfo(f'Longitude: {longitude} {longitude_direction}')
+        rospy.loginfo(f'Altitude: {altitude} meters')
+        rospy.loginfo(f'Mean Sea Level: {mean_sea_level} meters')
+        rospy.loginfo(f'Speed: {speed}')
+        rospy.loginfo(f'HDOP: {hdop}')
+        rospy.loginfo(f'Number of Satellites: {num_satellites}')
+        rospy.loginfo(f'UTC Time: {utc_time}')
+        rospy.loginfo(f'Fix Valid: {fix_valid}')
+
+def main():
     nmea_subscriber = NMEASubscriber()
-    rclpy.spin(nmea_subscriber)
-    nmea_subscriber.destroy_node()
-    rclpy.shutdown()
+    rospy.spin()
 
 if __name__ == '__main__':
     main()
