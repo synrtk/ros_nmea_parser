@@ -6,8 +6,8 @@ from sensor_msgs.msg import NavSatFix, NavSatStatus, TimeReference
 from geometry_msgs.msg import TwistStamped, QuaternionStamped
 from tf.transformations import quaternion_from_euler
 
-from libnmea_navsat_driver.checksum_utils import check_nmea_checksum
-import libnmea_navsat_driver.parser
+from ros_nmea_parser.checksum_utils import check_nmea_checksum
+import ros_nmea_parser.parser
 
 
 class RosNMEADriver(object):
@@ -131,7 +131,7 @@ class RosNMEADriver(object):
                           "Sentence was: %s" % repr(nmea_string))
             return False
 
-        parsed_sentence = libnmea_navsat_driver.parser.parse_nmea_sentence(
+        parsed_sentence = ros_nmea_parser.parser.parse_nmea_sentence(
             nmea_string)
         if not parsed_sentence:
             rospy.logdebug(
