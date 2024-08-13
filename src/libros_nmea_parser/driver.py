@@ -1,13 +1,12 @@
 import math
-
 import rclpy
-
 from rclpy.node import Node
 from sensor_msgs.msg import NavSatFix, NavSatStatus, TimeReference
 from geometry_msgs.msg import TwistStamped, QuaternionStamped
-from tf_transformations import quaternion_from_euler
-from libnmea_navsat_driver.checksum_utils import check_nmea_checksum
-from libnmea_navsat_driver import parser
+from tf2_ros import TransformBroadcaster
+import tf2_geometry_msgs  # 이 패키지가 quaternion 변환을 지원합니다.
+from libros_nmea_parser.checksum_utils import check_nmea_checksum
+from libros_nmea_parser import parser
 
 
 class Ros2NMEADriver(Node):
@@ -231,7 +230,7 @@ class Ros2NMEADriver(Node):
                 current_heading = QuaternionStamped()
                 current_heading.header.stamp = current_time
                 current_heading.header.frame_id = frame_id
-                q = quaternion_from_euler(0, 0, math.radians(data['heading']))
+                q = self.euler_to_quaternion(0, 0, math.radians(data['heading']))
                 current_heading.quaternion.x = q[0]
                 current_heading.quaternion.y = q[1]
                 current_heading.quaternion.z = q[2]
@@ -240,6 +239,24 @@ class Ros2NMEADriver(Node):
         else:
             return None
         return parsed_sentence
+
+    def euler_to_quaternion(self, roll, pitch, yaw):
+        """Convert Euler angles (roll, pitch, yaw) to a quaternion."""
+        # Roll, pitch, yaw in radians
+        cy = math.cos(yaw * 0.5)
+        sy = math.sin(yaw * 0.5)
+        cp = math.cos(pitch * 0.5)
+        sp = math.sin(pitch * 0.5)
+        cr = math.cos(roll * 0.5)
+        sr = math.sin(roll * 0.5)
+
+        qx = sr * cp * cy - cr * sp * sy
+        qy = cr * sp * cy + sr * cp * sy
+        qz = cr * cp * sy - sr * sp * cy
+        qw = cr * cp * cy + sr * sp * sy
+
+        return (qx, qy, qz, qw)
+
     """Helper method for getting the frame_id with the correct TF prefix"""
     def get_frame_id(self):
         frame_id = self.declare_parameter('frame_id', 'gps').value
