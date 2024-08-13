@@ -131,7 +131,7 @@ class RosNMEADriver(object):
                           "Sentence was: %s" % repr(nmea_string))
             return False
 
-        parsed_sentence = ros_nmea_parser.parser.parse_nmea_sentence(
+        parsed_sentence = libros_nmea_parser.parser.parse_nmea_sentence(
             nmea_string)
         if not parsed_sentence:
             rospy.logdebug(
