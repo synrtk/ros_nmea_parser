@@ -1,4 +1,12 @@
+
 def check_nmea_checksum(nmea_sentence):
+    """Calculate and compare the checksum of a NMEA string.
+
+    Args:
+        nmea_sentence (str): The NMEA sentence to check.
+
+    Return True if the calculated checksum of the sentence matches the one provided.
+    """
     split_sentence = nmea_sentence.split('*')
     if len(split_sentence) != 2:
         # No checksum bytes were found... improperly formatted/incomplete NMEA data?
