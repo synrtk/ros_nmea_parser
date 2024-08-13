@@ -4,7 +4,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import NavSatFix, NavSatStatus, TimeReference
 from geometry_msgs.msg import TwistStamped, QuaternionStamped
 from tf2_ros import TransformBroadcaster
-import tf2_geometry_msgs  # 이 패키지가 quaternion 변환을 지원합니다.
+import tf2_geometry_msgs 
 from libros_nmea_parser.checksum_utils import check_nmea_checksum
 from libros_nmea_parser import parser
 
