@@ -6,8 +6,8 @@ from sensor_msgs.msg import NavSatFix, NavSatStatus, TimeReference
 from geometry_msgs.msg import TwistStamped, QuaternionStamped
 from tf.transformations import quaternion_from_euler
 
-from ros_nmea_parser.checksum_utils import check_nmea_checksum
-import ros_nmea_parser.parser
+from libros_nmea_parser.checksum_utils import check_nmea_checksum
+import libros_nmea_parser.parser
 
 
 class RosNMEADriver(object):
