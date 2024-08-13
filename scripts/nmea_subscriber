@@ -1,0 +1,4 @@
+import libros_nmea_parser.nodes.nmea_subscriber
+
+
+libros_nmea_parser.nodes.nmea_subscriber.main()
