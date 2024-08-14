@@ -1,0 +1,14 @@
+string data_type
+uint32 fix_type
+float64 latitude
+string latitude_direction
+float64 longitude
+string longitude_direction
+float64 altitude
+float64 mean_sea_level
+float64 hdop
+float64 speed
+uint32 num_satellites
+float64 utc_time
+bool fix_valid
+float64 heading
